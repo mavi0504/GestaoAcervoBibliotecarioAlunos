@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Livros</title>
+</head>
+<body>
+    <h1>PROJETO ACERVO BIBLIOTECARIO</h1>
+    <hr>
+    <h2>Lista Livros</h2>
+    <h3>MENU</h3>
+    <div>
+        <a href="principal.html"><button>Menu Inicial</button></a>
+        <a href="cadastro.html"><button>Cadastrar Livro</button></a>
+    </div>
+    <br>
+
+    <div>
+        <table id="tabela" border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titulo</th>
+                    <th>Descrição</th>
+                    <th>Autor</th>
+                    <th>Estoque</th>
+                    <th>Editar</th>
+                    <th>Exluir</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                <!--os dados da tabela preechidos dinamicamente-->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost/ProjetoGestaoAcervoBibliotecario/api_livros";
+        
+        async function buscarDadosTabela() {
+            try {
+                const resposta = await fetch(`${API_BASE}/livro`);
+                
+                if (!resposta.ok){ //alterado
+                    const erroData = await resposta.json(); //alterado
+                    throw new Error(erroData.message || `Erro HTTP: ${resposta.status}`);
+                }
+
+                const dados = await resposta.json();
+                return dados;
+            }catch(erro){
+                throw erro;
+            }
+        }
+
+        async function preencherTabela(dados){
+            const tabelaCorpo = document.querySelector('#tabela tbody');
+            tabelaCorpo.innerHTML = ""; //limpa tabela antes de preencher
+
+            if (!dados || dados.length === 0){
+                const tr = document.createElement('tr');
+                const td = document.createElement('td'); 
+                td.colSpan = 9;
+                td.textContent = "Nenhum Livro Cadastrado.";
+                tr.appendChild(td);
+                tabelaCorpo.appendChild(tr);
+                return;
+            }
+
+            dados.forEach(livro => {
+                const tr = document.createElement('tr');
+
+                //ID
+                const tdId = document.createElement('td');
+                tdId.textContent = livro.id_livro;
+                tr.appendChild(tdId);
+
+                //TITULO
+                const tdTitulo = document.createElement('td');
+                tdTitulo.textContent = livro.titulo;
+                tr.appendChild(tdTitulo);
+                
+                //DESCRICAO
+                const tdDescricao = document.createElement('td');
+                tdDescricao.textContent = livro.descricao;
+                tr.appendChild(tdDescricao);
+
+                //AUTOR
+                const tdAutor = document.createElement('td');
+                tdAutor.textContent = livro.autor;
+                tr.appendChild(tdAutor);
+
+                //ESTOQUE
+                const tdEstoque = document.createElement('td');
+                tdEstoque.textContent = livro.estoque; //alterado
+                tr.appendChild(tdEstoque);
+
+                //EDITAR
+                const tdEditar = document.createElement('td');
+                tdEditar.classList.add('edit-icon');
+                const linkEditar = document.createElement('a');
+                linkEditar.textContent = '✏️';
+                tdEditar.appendChild(linkEditar);
+                tr.appendChild(tdEditar);
+                
+                //EXCLUIR
+                const tdDelete = document.createElement('td');
+                tdDelete.classList.add('delete-icon');
+                const btnDelete = document.createElement('button');
+                btnDelete.textContent = '🗑️';
+                tdDelete.appendChild(btnDelete);
+                tr.appendChild(tdDelete);
+
+                tabelaCorpo.appendChild(tr);
+
+            })
+
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const dados = await buscarDadosTabela();
+            preencherTabela(dados);
+        });
+    </script>
+</body>
+</html>

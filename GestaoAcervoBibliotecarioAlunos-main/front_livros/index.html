@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Acervo Bibliotecário</title>
+</head>
+<body>
+    <h1>PROJETO AULA</h1>
+    <hr>
+    <h2>Faça o Login</h2>
+    <form id="FormLogin">
+        <div class="form-container">
+            <input type="text" placeholder="E-mail" id="email">
+            <br><br>
+            <input type="password" placeholder="senha" id="senha">
+            <br><br>
+            <button type="submit">Entrar</button>
+            <br><br>
+            <p id="mensagem"></p>
+        </div>
+    </form>
+
+    <script>
+        const API_BASE = 'http://localhost/Aulas_PBE2/GestaoAcervoBibliotecarioAlunos/GestaoAcervoBibliotecarioAlunos-main/api_livros';
+
+        function getFormData() {
+            return {
+            email: document.getElementById('email').value,
+            senha: document.getElementById('senha').value
+            };
+        }
+
+        async function Login(user) {
+            try {
+                const resposta = await fetch(`${API_BASE}/login` , {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(user)
+                });
+                // JSON converter String
+                const dados = await resposta.json();
+                if (!resposta.ok) {
+                    // checkpoint (teste da reposta)
+                    console.log(resposta);
+                    throw new Error(`HTTP: ${resposta.status}`);
+                }
+                // retornando a resposta da API (string)
+                return dados;
+            } catch (erro) {
+                throw erro; //erro printado na Console
+            }
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault(); //previnir comportamento padrao Formulario
+            const form = document.getElementById('FormLogin');
+            const msg = document.getElementById('mensagem');
+            const user = getFormData();
+            // checkpoint - validar coleta de dados do usuario
+            try {
+                const resultado = await Login(user);
+                //checkpoint
+                if (resultado) {
+                    sessionStorage.setItem('usuario' , JSON.stringify(resultado));
+                    // se login for sucesso, carrega pagina principal da App (homepage)
+                    window.location.href = "principal.html";
+                } else {
+                    msg.textContent = `Login ou Senha incorreto!`;
+                    msg.style.color = "red";
+                }
+            } catch (erro) {
+                msg.textContent = `Erro no Login - ${erro}`;
+                msg.style.color = "red";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('FormLogin').addEventListener('submit', handleFormSubmit);
+        });
+
+    </script>
+
+</body>
+</html>
