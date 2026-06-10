@@ -30,6 +30,8 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); //limpa URL
 $route = basename($path); //captura a rota (/login)
 $method = $_SERVER['REQUEST_METHOD']; //captura metodo HTTP (POST)
 
+$livroController = new LivroController($db);
+
 try {
     switch ($route) {
         case 'health':
@@ -47,10 +49,48 @@ try {
             break;
         case 'livro':
             if ($method === 'GET') {
-                $livroController = new LivroController($db);
                 $livroController->getLivros();
             }
-            break;              
+            //[Sprint8] removido break
+            //break;
+
+            //[SPRINT8] Implementa Criar Novo Livros
+            if ($method === 'POST') {
+                $livroController->createLivro();
+            }
+            //[Sprint8] inserirdo mensagem de metodo nao reconhecido
+            http_response_code(405); //nao reconhece o metodo
+            echo json_encode([
+                'error' => "Método não permitido em /livro"
+            ]);
+            break;
+        
+        //[SPRINT7] Implementa Filtro Livros
+        case 'livroTitulo':
+            if ($method === 'GET'){
+                $livroController = new LivroController($db);
+                $livroController->getLivrosPeloTitulo();
+                exit;
+            }
+            http_response_code(405); //nao reconhece o metodo
+            echo json_encode([
+                'error' => "Método não permitido!"
+            ]);
+            break;
+        
+        //[Sprint9] Implementa Editar Livro
+        case 'livroId':
+            if ($method === 'GET'){
+                //$livroController = new LivroController($db);
+                $livroController->getLivrosPeloId();
+                exit;
+            }
+            http_response_code(405); //nao reconhece o metodo
+            echo json_encode([
+                'error' => "Método não permitido!"
+            ]);
+            break;
+
     }
 } catch (Throwable $e) {
     http_response_code(500); //Internal Server Error

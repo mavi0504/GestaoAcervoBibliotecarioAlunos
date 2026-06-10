@@ -16,6 +16,13 @@
     </div>
     <br>
 
+    <!-- //[Sprint7]-Implementa Filtro Livro -->    
+    <div>
+        <input type="text" placeholder="Busca por Título" id="filtroTitulo">
+        <button id="filtrar">Filtrar</button>
+        <p id="mensagem"></p>
+    </div>
+
     <div>
         <table id="tabela" border="1">
             <thead>
@@ -37,7 +44,7 @@
     </div>
 
     <script>
-        const API_BASE = "http://localhost/ProjetoGestaoAcervoBibliotecario/api_livros";
+        const API_BASE = "http://localhost/Aulas_PBE2/GestaoAcervoBibliotecarioAlunos/GestaoAcervoBibliotecarioAlunos-main/api_livros";
         
         async function buscarDadosTabela() {
             try {
@@ -103,6 +110,8 @@
                 const linkEditar = document.createElement('a');
                 linkEditar.textContent = '✏️';
                 tdEditar.appendChild(linkEditar);
+                //[Sprint9] Implementa Editar
+                linkEditar.href = `editar.html?id=${livro.id_livro}`;
                 tr.appendChild(tdEditar);
                 
                 //EXCLUIR
@@ -119,9 +128,58 @@
 
         }
 
+        //[Sprint7]-Implementa Filtro Livro
+        async function buscarLivroTitulo(titulo){
+            const params = new URLSearchParams();
+            if (titulo) {
+                params.append("titulo", titulo);
+            }
+            try {
+                const resposta = await fetch(`${API_BASE}/livroTitulo?${params.toString()}`);
+
+                if (!resposta.ok){
+                    const erroData = await resposta.json();
+                    throw new Error(erroData.message || `Erro HTTP: ${resposta.status}`);
+                }
+                const livros = await resposta.json();
+                return livros;
+            } catch(erro){
+                throw erro;
+            }
+
+        }
+
+        //[Sprint7]-Implementa Filtro Livro
+        async function filtrarLivro(){
+            const msg = document.getElementById('mensagem');
+            const titulo = document.getElementById('filtroTitulo').value;
+
+            if (!titulo) {
+                msg.textContent = "Preencha com um titulo para realizar a busca.";
+                msg.style.color = "red";
+                const dados = await buscarDadosTabela();
+                preencherTabela(dados);
+                return;
+            }
+
+            try {
+                const livros = await buscarLivroTitulo(titulo);
+                preencherTabela(livros);
+                titulo.value = "";
+                msg.textContent = "";
+            } catch(erro){
+                msg.textContent = `Erro: ${erro.message}`;
+                msg.style.color = "red";
+            }
+        }
+
+
         document.addEventListener("DOMContentLoaded", async () => {
             const dados = await buscarDadosTabela();
             preencherTabela(dados);
+
+            //[Sprint7]-Implementa Filtro Livro
+            document.getElementById('filtrar').addEventListener('click', filtrarLivro);
         });
     </script>
 </body>

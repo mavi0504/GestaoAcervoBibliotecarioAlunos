@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Livro</title>
+</head>
+<body>
+    <h1>Atualizar Livros</h1>
+    <form id="formLivro">
+        <label>
+            id:
+            <input type="number" id="id" required disabled>
+        </label>
+        <br>
+        <label>
+            Titulo:
+            <input type="text" id="titulo" required>
+        </label>
+        <br>
+        <label>
+            Descricao:
+            <input type="text" id="descricao" required>
+        </label>
+        <br>
+        <label>
+            Autor:
+            <input type="text" id="autor" required>
+        </label>
+        <br>
+        <button type="submit">Atualizar Livro</button>
+        <br>
+    </form>
+
+    <p id="mensagem"></p>
+
+    <script>
+        const API_BASE = "http://localhost/Aulas_PBE2/GestaoAcervoBibliotecarioAlunos/GestaoAcervoBibliotecarioAlunos-main/api_livros";
+        
+        async function getLivro(id) {
+            try{
+                const resposta = await fetch(`${API_BASE}/livroId?id=${id}`);
+                if(!resposta.ok){
+                    const erroData = await resposta.json();
+                    throw new Error(erroData.message || `Erro HTTP: ${resposta.status}`);
+                }
+                const livro = await resposta.json();
+                return livro;
+            }catch(erro){
+                throw erro;
+            }
+        }
+
+        function preencherForm(dados){
+            document.getElementById('id').value = dados.id_livro;
+            document.getElementById('titulo').value = dados.titulo;
+            document.getElementById('autor').value = dados.autor;
+            document.getElementById('descricao').value = dados.descricao;
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            //toda vez que a pagina carregar buscar dados preencher tela
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+            const dados = await getLivro(id);
+            preencherForm(dados);
+        })
+    </script>
+</body>
+</html>

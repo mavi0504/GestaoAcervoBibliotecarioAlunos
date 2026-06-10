@@ -6,6 +6,82 @@
     <title>Cadastro Livro</title>
 </head>
 <body>
+    <br>
+    <h3>MENU</h3>
+    <div>
+      <a href="principal.html"><button>Menu Inicial</button></a>
+      <a href="listaLivros.html"><button>Lista Livros</button></a>
+    </div>
+    <br><br>
+
+    <div class="container">
+      <h1>Cadastrar Livro</h1>
+    </div>
+    <form id="FormCadastrar">
+        <input type="text" placeholder="Titulo" required id="titulo">
+        <br><br>
+        <input type="text" placeholder="autor" required id="autor">
+        <br><br>
+        <input type="text" placeholder="Descricao" required id="descricao">
+        <br><br>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <br>
+    <p id="mensagem"></p>
+    <br><br>
+
+    <script>
+       const API_BASE = "http://localhost/Aulas_PBE2/GestaoAcervoBibliotecarioAlunos/GestaoAcervoBibliotecarioAlunos-main/api_livros";
+       
+       //[Sprint8] removido async da funcao
+       async function getFormData(){
+            return {
+                titulo: document.getElementById('titulo').value,
+                autor: document.getElementById('autor').value,
+                descricao: document.getElementById('descricao').value
+            };
+       }
+
+        async function postCadastro(livro){
+            try{
+                const resposta = await fetch(`${API_BASE}/livro`,{
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(livro) 
+                });
+                const dados = await resposta.json();
+
+                if (!resposta.ok){
+                    throw new Error(`HTTP: ${resposta.status} - ${resposta.message}`);
+                }
+                return dados;
+            }catch(erro){
+                throw erro;
+            }
+        }
+
+        async function handleFormSubmit(event){
+            event.preventDefault();
+            const msg = document.getElementById('mensagem');
+            //[Sprint8] utilizado await para a chamada a funcao
+            const livro = await getFormData();
+            try{   
+                const resultado = await postCadastro(livro);
+                msg.textContent = "Livro Cadastrado com sucesso!";
+                msg.style.color = "green";
+                //limpa formulario Cadastrar Livro
+                document.getElementById('FormCadastrar').reset();                
+            }catch(erro){
+                msg.textContent = `Erro ao cadastrar livros: ${erro.message}`;
+                msg.style.color = "red";
+            }
+        }
+
+       document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("FormCadastrar").addEventListener('submit', handleFormSubmit);
+        });
+
+    </script>
     
 </body>
 </html>

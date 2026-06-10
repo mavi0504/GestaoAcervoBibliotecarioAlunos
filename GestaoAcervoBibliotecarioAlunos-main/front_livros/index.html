@@ -60,9 +60,11 @@
             const msg = document.getElementById('mensagem');
             const user = getFormData();
             // checkpoint - validar coleta de dados do usuario
+            console.log(user);
             try {
                 const resultado = await Login(user);
                 //checkpoint
+                console.log(resultado);
                 if (resultado) {
                     sessionStorage.setItem('usuario' , JSON.stringify(resultado));
                     // se login for sucesso, carrega pagina principal da App (homepage)
