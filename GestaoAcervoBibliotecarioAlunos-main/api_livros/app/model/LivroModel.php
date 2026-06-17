@@ -35,16 +35,16 @@ class LivroModel {
     //[Sprint9] Implementa Editar
     public function getLivroPeloId($id){
         $stmt = $this->db->prepare("
-        SELECT 
-        livros.id_livro,
-        livros.titulo,
-        livros.descricao,
-        livros.autor,
-        estoque.id_estoque,
-        estoque.quantidade_atual as estoque 
-        FROM livros
-        JOIN estoque on estoque.id_livro = livros.id_livro 
-        WHERE Livros.id_livro = :id;
+            SELECT 
+            livros.id_livro,
+            livros.titulo,
+            livros.descricao,
+            livros.autor,
+            estoque.id_estoque,
+            estoque.quantidade_atual as estoque 
+            FROM livros
+            JOIN estoque on estoque.id_livro = livros.id_livro 
+            WHERE Livros.id_livro = :id;
         ");
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -80,6 +80,15 @@ class LivroModel {
             return $this->db->lastInsertId();
         };
         return false;
+    }
+
+    public function deleteLivro($id){
+        $stmt = $this->db->prepare("
+            DELETE FROM Livros
+            WHERE id_livro = :id
+        ");
+        $stmt->bindValue(':id', $id);
+        return $stmt->execute();
     }
 }
 

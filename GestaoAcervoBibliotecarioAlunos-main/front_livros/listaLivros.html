@@ -62,6 +62,26 @@
             }
         }
 
+        async function deleteLivro(id){
+            const bodyData = {
+                id: id
+            };
+            try{
+                const resposta = await fetch(`${API_BASE}/livro`,{
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (!resposta.ok){
+                    throw new Error(`HTTP: ${resposta.status} - ${dados.message}`);
+                }
+                return dados;
+            } catch(erro){
+                throw erro;
+            }
+        }
+
         async function preencherTabela(dados){
             const tabelaCorpo = document.querySelector('#tabela tbody');
             tabelaCorpo.innerHTML = ""; //limpa tabela antes de preencher
@@ -120,6 +140,15 @@
                 const btnDelete = document.createElement('button');
                 btnDelete.textContent = '🗑️';
                 tdDelete.appendChild(btnDelete);
+
+                btnDelete.addEventListener('click', () => {
+                    if (confirm(`Deseja realmente Excluir o livro = ${livro.titulo}?`)){
+                        deleteLivro(livro.id_livro)
+                        alert("Livro Deletado com sucesso!");
+                        location.reload();
+                    }
+                });
+
                 tr.appendChild(tdDelete);
 
                 tabelaCorpo.appendChild(tr);

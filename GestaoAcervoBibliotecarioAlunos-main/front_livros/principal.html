@@ -17,6 +17,11 @@
     <h3 id="mensagem"></h3>
 
     <script>
+        function logout(){
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             const usuario = JSON.parse(sessionStorage.getItem('usuario'));
             if(!usuario) {
@@ -24,6 +29,8 @@
             }
             const msg = document.getElementById('mensagem');
             msg.textContent = `Bem vindo -  ${usuario.nome} ${usuario.sobrenome} !😍🍿`;
+
+            document.getElementById('btnLogout'). addEventListener('click', logout);
         });
     </script>
 </body>

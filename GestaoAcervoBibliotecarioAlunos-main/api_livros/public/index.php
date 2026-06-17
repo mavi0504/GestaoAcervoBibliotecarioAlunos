@@ -65,6 +65,11 @@ try {
                 $livroController->updateLivro();
                 exit;
             }
+
+            if ($method == 'DELETE'){
+                $livroController->deleteLivro();
+                exit;
+            }
             //[Sprint8] inserirdo mensagem de metodo nao reconhecido
             http_response_code(405); //nao reconhece o metodo
             echo json_encode([

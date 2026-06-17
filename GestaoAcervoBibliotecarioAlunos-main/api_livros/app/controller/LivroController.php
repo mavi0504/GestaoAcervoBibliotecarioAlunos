@@ -119,5 +119,19 @@ class LivroController{
         }
     }
 
+    public function deleteLivro(){
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (isset($data['id'])){
+            $this->modelLivro->deleteLivro($data['id']);
+            $this->viewLivro->sendResponse([
+                'message' => 'Livro Deletado!'
+            ], 200);
+        }else{
+            $this->viewLivro->sendResponse([
+                'message' => 'Erro ao Deletar Livro. Confira se os campos foram preenchidos'
+            ], 400);
+        }
+    }
+
 }
 ?>
