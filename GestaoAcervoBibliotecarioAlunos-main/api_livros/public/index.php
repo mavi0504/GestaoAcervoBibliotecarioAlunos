@@ -50,6 +50,7 @@ try {
         case 'livro':
             if ($method === 'GET') {
                 $livroController->getLivros();
+                exit;
             }
             //[Sprint8] removido break
             //break;
@@ -57,6 +58,12 @@ try {
             //[SPRINT8] Implementa Criar Novo Livros
             if ($method === 'POST') {
                 $livroController->createLivro();
+                exit;
+            }
+            //[Sprint9]
+            if ($method === 'PUT'){
+                $livroController->updateLivro();
+                exit;
             }
             //[Sprint8] inserirdo mensagem de metodo nao reconhecido
             http_response_code(405); //nao reconhece o metodo

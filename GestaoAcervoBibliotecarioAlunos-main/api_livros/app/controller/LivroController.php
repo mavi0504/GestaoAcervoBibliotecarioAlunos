@@ -104,5 +104,20 @@ class LivroController{
         } 
     }
 
+    //[SPRINT9]
+    public function updateLivro(){
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (isset($data['id']) && isset($data['titulo']) && isset($data['autor']) && isset($data['descricao'])){
+            $result = $this->modelLivro->updateLivro($data['id'], $data['titulo'], $data['autor'], $data['descricao']);
+            $this->viewLivro->sendResponse([
+                'message' => 'Livro atualizado com sucesso'
+            ], 200);
+        }else{
+            $this->viewLivro->sendResponse([
+                'message' => 'Erro: Confira se os campos foram enviados corretamente.'
+            ], 400);
+        }
+    }
+
 }
 ?>

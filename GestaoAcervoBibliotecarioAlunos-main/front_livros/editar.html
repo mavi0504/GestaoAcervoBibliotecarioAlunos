@@ -58,12 +58,58 @@
             document.getElementById('descricao').value = dados.descricao;
         }
 
+        function getLivroFormData(){
+            return {
+                id: document.getElementById('id').value,
+                titulo: document.getElementById('titulo').value,
+                autor: document.getElementById('autor').value,
+                descricao: document.getElementById('descricao').value
+            }
+        }
+
+        async function atualizarLivro(livro){
+            try{
+                const resposta = await fetch(`${API_BASE}/livro`, {
+                    method: 'PUT',
+                    headers: {'Content-type': 'application/json'},
+                    body: JSON.stringify(livro)
+                });
+                const dados = await resposta.json();
+                if (!resposta.ok){
+                    throw new Error(`HTTP: ${resposta.status} - ${dados.message}`);
+                }
+                return dados;
+            }catch(erro){
+                throw erro;
+            }
+        }
+
+        async function enviarForm(){
+            event.preventDefault();
+            const form = document.getElementById('formLivro');
+            const msg = document.getElementById('mensagem');
+
+            const livro = await getLivroFormData();
+
+            try {
+                const resultado = await atualizarLivro(livro);
+                msg.textContent = "Livro atualizado com sucesso!";
+                msg.style.color = "green";
+            }catch(erro){
+                msg.textContent = `Erro ao atualizar o Livro: ${erro}`;
+                msg.style.color = "red";
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", async () => {
             //toda vez que a pagina carregar buscar dados preencher tela
             const params = new URLSearchParams(window.location.search);
             const id = params.get("id");
             const dados = await getLivro(id);
             preencherForm(dados);
+
+            //acao do botao Atualizar
+            document.getElementById('formLivro').addEventListener('submit', enviarForm);
         })
     </script>
 </body>
