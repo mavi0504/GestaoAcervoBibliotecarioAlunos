@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
 require_once '../config/db.php';
 require_once '../app/controller/UsuarioController.php';
 require_once '../app/controller/LivroController.php';
+require_once '../controller/EstoqueController.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -31,6 +32,8 @@ $route = basename($path); //captura a rota (/login)
 $method = $_SERVER['REQUEST_METHOD']; //captura metodo HTTP (POST)
 
 $livroController = new LivroController($db);
+
+$estoqueController = new EstoqueController($db);
 
 try {
     switch ($route) {
@@ -102,6 +105,17 @@ try {
                 'error' => "Método não permitido!"
             ]);
             break;
+
+            case 'estoque':
+                if ($method === 'PUT'){
+                    $estoqueController->atualizarSaldo();
+                    exit;
+                }
+                http_response_code(405); //nao reconhece o metodo
+                echo json_encode([
+                    'error' => "Método não permitido!"
+                ]);
+                break;
 
     }
 } catch (Throwable $e) {
