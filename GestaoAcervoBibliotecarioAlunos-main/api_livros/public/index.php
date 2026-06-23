@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 header('Content-Type: application/json; charset=utf-8');
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '*'; // API recebe requisicao de qualquer dominio
 header('Access-Control-Allow-Origin: ' . $origin);
-header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
@@ -21,7 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
 require_once '../config/db.php';
 require_once '../app/controller/UsuarioController.php';
 require_once '../app/controller/LivroController.php';
-require_once '../controller/EstoqueController.php';
+//[Sprint 11] Implementa Gestao de Estoque
+require_once '../app/controller/EstoqueController.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -33,6 +34,7 @@ $method = $_SERVER['REQUEST_METHOD']; //captura metodo HTTP (POST)
 
 $livroController = new LivroController($db);
 
+//[Sprint 11] Implementa Gestao de Estoque
 $estoqueController = new EstoqueController($db);
 
 try {
@@ -68,8 +70,8 @@ try {
                 $livroController->updateLivro();
                 exit;
             }
-
-            if ($method == 'DELETE'){
+            //[Sprint10] Implementa Excluir
+            if ($method === 'DELETE'){
                 $livroController->deleteLivro();
                 exit;
             }
@@ -105,17 +107,18 @@ try {
                 'error' => "Método não permitido!"
             ]);
             break;
-
-            case 'estoque':
-                if ($method === 'PUT'){
-                    $estoqueController->atualizarSaldo();
-                    exit;
-                }
-                http_response_code(405); //nao reconhece o metodo
-                echo json_encode([
-                    'error' => "Método não permitido!"
-                ]);
-                break;
+        
+        //[Sprint 11] Implementa Gestao de Estoque
+        case 'estoque':
+            if ($method === 'PUT'){
+                $estoqueController->atualizarSaldo();
+                exit;
+            }
+            http_response_code(405); //nao reconhece o metodo
+            echo json_encode([
+                'error' => "Método não permitido!"
+            ]);
+            break;
 
     }
 } catch (Throwable $e) {

@@ -18,5 +18,16 @@ class EstoqueModel {
         $stmt->bindValue(':quantidade', $quantidade);
         return $stmt->execute();
     }
+
+    public function updateEstoque($id_livro, $quantidade){
+        $stmt = $this->db->prepare("
+            UPDATE Estoque
+            Set quantidade_atual = :quantidade
+            WHERE id_livro = :id_livro;
+        ");
+        $stmt->bindValue(':quantidade', $quantidade);
+        $stmt->bindValue(':id_livro', $id_livro);
+        return $stmt->execute();
+    }
 }
 ?>
